@@ -630,15 +630,30 @@ public abstract class XYChart extends AbstractChart {
    */
   protected void drawText(Canvas canvas, String text, float x, float y, Paint paint,
       float extraAngle) {
-    float angle = -mRenderer.getOrientation().getAngle() + extraAngle;
-    if (angle != 0) {
-      // canvas.scale(1 / mScale, mScale);
-      canvas.rotate(angle, x, y);
-    }
-    drawString(canvas, text, x, y, paint);
-    if (angle != 0) {
-      canvas.rotate(-angle, x, y);
-      // canvas.scale(mScale, 1 / mScale);
+    Orientation or = mRenderer.getOrientation();
+    if (or == Orientation.VERTICAL) {
+      float angleOrientation = -mRenderer.getOrientation().getAngle();
+      canvas.scale(1 / mScale, mScale);
+      canvas.rotate(angleOrientation, 0, 0);
+      float xPos = -y / mScale;
+      float yPos = x * mScale;
+      if (extraAngle != 0) {
+        canvas.rotate(extraAngle, xPos, yPos);
+      }
+      drawString(canvas, text, xPos, yPos, paint);
+      if (extraAngle != 0) {
+        canvas.rotate(-extraAngle, xPos, yPos);
+      }
+      canvas.rotate(-angleOrientation, 0, 0);
+      canvas.scale(mScale, 1 / mScale);
+    } else {
+      if (extraAngle != 0) {
+        canvas.rotate(extraAngle, x, y);
+      }
+      drawString(canvas, text, x, y, paint);
+      if (extraAngle != 0) {
+        canvas.rotate(-extraAngle, x, y);
+      }
     }
   }
 
